@@ -216,7 +216,7 @@ def carga_codigos_postales():
     return main_df.copy()
 
 
-def 
+
 
 if __name__ == '__main__':
     
@@ -240,30 +240,19 @@ if __name__ == '__main__':
                 df_derechohabientes_seguridadsocial_municipal]
     
     
-    lista_df_dtype = [cambiar_tipodedato(df,'CLAVE') for df in lista_df]
-    
+    lista_df_dtype = [cambiar_tipodedato(df,'CLAVE') for df in lista_df]    
     lista_df_set_index = multiple_merge_by_colum(main_file,lista_df_dtype,'CLAVE')
 
-    test = lista_df_set_index[:20]
-
-    df_cp = carga_codigos_postales()
-    
-    
-    
+    df_cp = carga_codigos_postales()  
     df_cp['c_estado'] = df_cp['c_estado'].apply(lambda x: str(x))
     df_cp['c_mnpio'] =  df_cp['c_mnpio'].apply(lambda x: str(x))
+    df_cp['c_mnpio']  = df_cp['c_mnpio'].apply(lambda x:'00'+str(x) if len(x) == 0 else x)
+    df_cp['c_mnpio']  = df_cp['c_mnpio'].apply(lambda x:'01'+str(x) if len(x) == 1 else x)
+    df_cp['TEST']  = df_cp['c_estado'] + df_cp['c_mnpio']
+    df_cp['CLAVE'] = df_cp['TEST'].apply(lambda x: int(x))   
     
     
     
-    df_cp['TEST'] = df_cp['c_estado'] + df_cp['c_mnpio']
+    super_df = pd.merge(df_cp,lista_df_set_index, on='CLAVE', how='left')
+    super_df.to_pickle('super_df.pkl')    
     
-    for idx in range(len(df_cp)):
-        df_cp['CLAVE'] = df_cp['c_estado'].iloc[idx] + df_cp['c_mnpio'].iloc[idx]
-        
-    df_cp['CLAVE'] = df_cp['CLAVE'].apply(lambda x: int(x))    
-
-
-
-
-
-
