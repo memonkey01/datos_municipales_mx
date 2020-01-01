@@ -2,26 +2,15 @@
 """
 Created on Sat Dec 28 19:45:20 2019
 
-@author: izqui
+@author: GUILLERMO IZQUIERDO
+
+Bases de datos a nivel municipal de México
+con datos poblacionales y con código postal
+para alimentar modelos de ML.
 """
 
-import numpy as np
+
 import pandas as pd
-import plotly.io as pio
-import plotly.graph_objects as go
-
-"""
-# Helix equation
-t = np.linspace(0, 10, 50)
-x, y, z = np.cos(t), np.sin(t), t
-fig = go.Figure(data=[go.Scatter3d(x=x, y=y, z=z,
-                                   mode='markers')])
-pio.write_html(fig, file='test.html', auto_open=True,config={'displaylogo': False})
-"""
-
-
-
-
 
 
 
@@ -37,7 +26,7 @@ def poblacion_economicamente_activa_municipal():
     **  Municipio con muestra insuficiente.
     
     """
-    pea_2015 = pd.read_excel('siha_2_2_4_1_agosto_2016.xlsx', encoding='utf-8', sheet_name='2015')
+    pea_2015 = pd.read_excel('datos/siha_2_2_4_1_agosto_2016.xlsx', encoding='utf-8', sheet_name='2015')
     columnas_pea = ['CLAVE','ESTADO','MUNICIPIO','POB_12_MAS','PEA_TOTAL','PEA_OCUPADA','PEA_DESOCUPADA','NO_PEA','NO_PEA_ESPECIFICADO']
     pea_2015_copy = pea_2015.iloc[5:-8,:].copy()
     pea_2015_copy.columns = columnas_pea
@@ -51,7 +40,7 @@ def obligaciones_fiscales_municipales():
     
     Fuente: Unidad de Coordinación con Entidades Federativas, SHCP.
     """
-    obligaciones_finan_mun_2015 = pd.read_excel('siha_2_2_5.xlsx', encoding='utf-8', sheet_name='1° 2015')
+    obligaciones_finan_mun_2015 = pd.read_excel('datos/siha_2_2_5.xlsx', encoding='utf-8', sheet_name='1° 2015')
     columnas_obligaciones_finan_mun_2015 = ['CLAVE','ESTADO','MUNICIPIO','OB_BANCA_MUL','OB_BANCA_DESA','OB_EMISIONES_BUR',
                                             'OB_OTROS','OB_TOTAL']
     obligaciones_finan_mun_2015_copy = obligaciones_finan_mun_2015.iloc[5:-2,:].copy()
@@ -72,7 +61,7 @@ def delitos_fuero_comun_municipal():
     FUENTE: Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública.
     n. d. = No disponible
     """
-    delitos_fuero_comun_mun_2015 = pd.read_excel('siha_2_2_4_9_dic_2015.xlsx', encoding='utf-8')
+    delitos_fuero_comun_mun_2015 = pd.read_excel('datos/siha_2_2_4_9_dic_2015.xlsx', encoding='utf-8')
     columnas_delitos_fuero_comun_mun_2015 = ['CLAVE','ESTADO','MUNICIPIO','DELITOS_2011','DELITOS_2012','DELITOS_2013',
                                             'DELITOS_2014']
     delitos_fuero_comun_mun_2015_copy = delitos_fuero_comun_mun_2015.iloc[3:-5,:].copy()
@@ -90,7 +79,7 @@ def alumnos_municipal():
     C = Cifra no publicable, por el principio de confidencialidad de la Ley de Información Estadística y Geográfica.
     ND = No disponible
     """
-    alumnos_mun_2012 = pd.read_excel('siha_2_2_4_8.xlsx', encoding='utf-8')
+    alumnos_mun_2012 = pd.read_excel('datos/siha_2_2_4_8.xlsx', encoding='utf-8')
     columnas_alumnos_mun_2012 = ['CLAVE','ESTADO','MUNICIPIO',
                                 'ALUM_TOTALES_2005','PREESCOLAR_2005','PRIMARIA_2005',
                                 'SECUNDARIA_2005','PROFESIONAL_T_2005','BACHILLERATO_2005',
@@ -121,7 +110,7 @@ def viviendas_internet_municipal():
     
     FUENTE: Resultados definitivos del Censo de Población y Vivienda 2010, INEGI.
     """
-    viviendas_inter_2010 = pd.read_excel('siha_2_2_4_6.xlsx', encoding='utf-8')
+    viviendas_inter_2010 = pd.read_excel('datos/siha_2_2_4_6.xlsx', encoding='utf-8')
     columnas_viviendas_inter_2010 = ['CLAVE','ESTADO','MUNICIPIO',
                                      'VIV_HABITADAS','VIV_C_COMPUTADORA','VIVIENDAS_C_INTERNET']
     viviendas_inter_2010_copy = viviendas_inter_2010.iloc[3:-3,1:].copy()
@@ -137,7 +126,7 @@ def medicos_municipal():
     * Incluye personal adscrito al IMSS, ISSSTE, PEMEX, SEDENA, SEMAR, IMSS-Oportunidades, SSA y otras.
     Fuente: INEGI, Sistema Estatal y Municipal de Base de Datos
     """
-    medicos_2012 = pd.read_excel('siha_2_2_4_5.xlsx', encoding='utf-8')
+    medicos_2012 = pd.read_excel('datos/siha_2_2_4_5.xlsx', encoding='utf-8')
     columnas_medicos_2012 = ['CLAVE','ESTADO','MUNICIPIO',
                              'MEDICOS_2005', 'MEDICOS_2006', 'MEDICOS_2007',
                              'MEDICOS_2008', 'MEDICOS_2009', 'MEDICOS_2010',
@@ -160,7 +149,7 @@ def infraestructura_educativa_municipal():
     FUENTE: INEGI, Sistema Estatal y Municipal de Bases de Datos
     
     """
-    infra_ed_2012 = pd.read_excel('siha_2_2_4_2.xlsx', encoding='utf-8')
+    infra_ed_2012 = pd.read_excel('datos/siha_2_2_4_2.xlsx', encoding='utf-8')
     columnas_infra_ed_2012 = ['CLAVE','ESTADO','MUNICIPIO',
                              'PLANTELES', 'AULAS', 'BIBLIOTECAS',
                              'LABORATORIOS', 'TALLERES', 'ANEXOS']
@@ -184,7 +173,7 @@ def derechohabientes_seguridadsocial_municipal():
 
     
     """
-    derechohabiente_2010 = pd.read_excel('siha_2_2_4_3.xlsx', encoding='utf-8')
+    derechohabiente_2010 = pd.read_excel('datos/siha_2_2_4_3.xlsx', encoding='utf-8')
     columnas_derechohabiente_2010 = ['CLAVE','ESTADO','MUNICIPIO',
                              'POB_TOTAL', 'TOTAL', 'IMSS',
                              'ISSSTE', 'ISSSTE_ESTATAL', 'PEMEX_DEF_MARIN',
@@ -207,23 +196,33 @@ def multiple_merge_by_colum(main_df, df_list,column):
     return main_df_inner
 
 def carga_codigos_postales():
-    xl = pd.ExcelFile('CPdescarga.xls')    
+    xl = pd.ExcelFile('datos/CPdescarga.xls')    
     hojas_leer = xl.sheet_names[1:]
     main_df = pd.DataFrame()
     for hoja in hojas_leer:    
-        cp_catalogo = pd.read_excel('CPdescarga.xls',sheet_name=hoja,dtypes={'c_estado':str,'c_mnpio':str},ignore_index=True)
+        cp_catalogo = pd.read_excel('datos/CPdescarga.xls',sheet_name=hoja,dtypes={'c_estado':str,'c_mnpio':str},ignore_index=True)
         main_df = pd.concat([main_df,cp_catalogo])
     return main_df.copy()
 
-
+def limpiar_codigos_postales(df):
+    df_cp = df.copy() 
+    df_cp['c_estado'] = df_cp['c_estado'].apply(lambda x: str(x))
+    df_cp['c_mnpio'] =  df_cp['c_mnpio'].apply(lambda x: str(x))
+    df_cp['c_mnpio2']  = df_cp['c_mnpio'].apply(lambda x:'00'+str(x) if len(x) == 1 else x)
+    df_cp['c_mnpio3']  = df_cp['c_mnpio2'].apply(lambda x:'0'+str(x) if len(x) == 2 else x)
+    df_cp['TEST']  = df_cp['c_estado'] + df_cp['c_mnpio3']
+    df_cp['CLAVE'] = df_cp['TEST'].apply(lambda x: int(x))   
+    return df_cp
 
 
 if __name__ == '__main__':
     
-    
-    main_file = pd.read_csv('Indicadores_municipales_sabana_DA.csv', encoding='utf-8')
+
+    # Leemos el archivo principal
+    main_file = pd.read_csv(r'datos/Indicadores_municipales_sabana_DA.csv', encoding='utf-8')
     main_file.rename(columns={'clave_mun':'CLAVE'},inplace=True)
     
+    # Leemos otros archivos
     df_poblacion_economicamente_activa_municipal = poblacion_economicamente_activa_municipal()
     df_obligaciones_fiscales_municipales = obligaciones_fiscales_municipales()
     df_delitos_fuero_comun_municipal = delitos_fuero_comun_municipal()
@@ -233,26 +232,28 @@ if __name__ == '__main__':
     df_infraestructura_educativa_municipal = infraestructura_educativa_municipal()
     df_derechohabientes_seguridadsocial_municipal = derechohabientes_seguridadsocial_municipal()
     
-    
+    # Creamos lista de archivos 
     lista_df = [df_poblacion_economicamente_activa_municipal,df_obligaciones_fiscales_municipales,
                 df_delitos_fuero_comun_municipal,df_alumnos_municipal,df_viviendas_internet_municipal,
                 df_medicos_municipal,df_infraestructura_educativa_municipal,
                 df_derechohabientes_seguridadsocial_municipal]
     
+    # Modificamos la lista de archivos para hacer que la CLAVE sea int
+    lista_df_dtype = [cambiar_tipodedato(df,'CLAVE') for df in lista_df]  
     
-    lista_df_dtype = [cambiar_tipodedato(df,'CLAVE') for df in lista_df]    
+    # Hacemos un merge de multiples archivos
     lista_df_set_index = multiple_merge_by_colum(main_file,lista_df_dtype,'CLAVE')
 
-    df_cp = carga_codigos_postales()  
-    df_cp['c_estado'] = df_cp['c_estado'].apply(lambda x: str(x))
-    df_cp['c_mnpio'] =  df_cp['c_mnpio'].apply(lambda x: str(x))
-    df_cp['c_mnpio']  = df_cp['c_mnpio'].apply(lambda x:'00'+str(x) if len(x) == 0 else x)
-    df_cp['c_mnpio']  = df_cp['c_mnpio'].apply(lambda x:'01'+str(x) if len(x) == 1 else x)
-    df_cp['TEST']  = df_cp['c_estado'] + df_cp['c_mnpio']
-    df_cp['CLAVE'] = df_cp['TEST'].apply(lambda x: int(x))   
+    # Leemos los codigos postales
+    df_cp_raw = carga_codigos_postales()
+    
+    # Limpiamos los codigos postales 
+    df_cp = limpiar_codigos_postales(df_cp_raw)
     
     
-    
+    # Merge final entre nuestra base de CP y datos
     super_df = pd.merge(df_cp,lista_df_set_index, on='CLAVE', how='left')
-    super_df.to_pickle('super_df.pkl')    
+    
+    # Guardamos el dataframe en un pkl para uso futuro
+    super_df = pd.read_pickle('super_df.pkl')   
     
