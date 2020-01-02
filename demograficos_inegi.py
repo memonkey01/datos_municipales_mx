@@ -11,8 +11,11 @@ para alimentar modelos de ML.
 
 
 import pandas as pd
+from sklearn.cluster import KMeans
+import numpy as np
 
-
+import plotly.io as pio
+import plotly.graph_objects as go
 
 def poblacion_economicamente_activa_municipal():
     """
@@ -214,6 +217,45 @@ def limpiar_codigos_postales(df):
     df_cp['CLAVE'] = df_cp['TEST'].apply(lambda x: int(x))   
     return df_cp
 
+        
+def force_integer_transformation(df):
+    df_copy = df.copy()
+    columnas = df_copy.columns
+    str_columnas = []
+    for columna in columnas:
+        try:
+            df_copy[columna] = df_copy[columna].apply(lambda x : float(x))
+        except:
+            str_columnas.append(columna)
+    
+    for columna in str_columnas[2:]:
+        df = df_copy[columna].copy()
+        values = []
+        for value in df:    
+            try:
+                values.append(float(value))
+            except:
+                values.append(None)
+        df_copy[columna] = values
+    return df_copy
+
+
+def clean_numeric_super_df(super_df):
+    copy_super = super_df.copy()
+    string_columns = []
+    for columna in copy_super.columns:    
+        try:
+            value = copy_super[columna].median()
+            copy_super[columna] = copy_super[columna].fillna(value)
+            string_columns.append(value)
+        except:
+            string_columns.append(columna)
+
+    filter_numeric_columns = [y for x,y in zip(string_columns,copy_super.columns ) if isinstance(x, float)]
+    cpy_filtered = copy_super[filter_numeric_columns]
+    clean_super_df = cpy_filtered.drop('c_CP', axis=1)
+    return clean_super_df
+
 
 if __name__ == '__main__':
     
@@ -239,7 +281,7 @@ if __name__ == '__main__':
                 df_derechohabientes_seguridadsocial_municipal]
     
     # Modificamos la lista de archivos para hacer que la CLAVE sea int
-    lista_df_dtype = [cambiar_tipodedato(df,'CLAVE') for df in lista_df]  
+    lista_df_dtype = [force_integer_transformation(df) for df in lista_df]  
     
     # Hacemos un merge de multiples archivos
     lista_df_set_index = multiple_merge_by_colum(main_file,lista_df_dtype,'CLAVE')
@@ -250,10 +292,66 @@ if __name__ == '__main__':
     # Limpiamos los codigos postales 
     df_cp = limpiar_codigos_postales(df_cp_raw)
     
-    
     # Merge final entre nuestra base de CP y datos
     super_df = pd.merge(df_cp,lista_df_set_index, on='CLAVE', how='left')
     
     # Guardamos el dataframe en un pkl para uso futuro
     super_df = pd.read_pickle('super_df.pkl')   
+  
+    clean_super_df = clean_numeric_super_df(super_df)
+    
+    geo_df = pd.read_csv(r'datos/mx_postal_codes.csv', encoding='latin1')
+    geo_df.rename(columns={'Postal Code':'d_codigo'},inplace=True)
+    geo_df_dup = geo_df.drop_duplicates(subset=['d_codigo'], keep='first')
+    
+    len(clean_super_df.d_codigo.unique())
+    
+    
+    clean_super_df_geo = pd.merge(clean_super_df,geo_df_dup[['d_codigo','Latitude','Longtiude']], how='left', on ='d_codigo' )
+    testtttet = clean_super_df_geo.iloc[:,13:-2]
+    
+    
+    # Creamos variable para overfittear modelo
+    X = testtttet.values
+    kmeans = KMeans(n_clusters=5, random_state=0).fit(X)
+    kmeans.labels_
+    y = kmeans.predict(X)
+
+    colores = {0:'#110133',1:'#00918e',2:'#4dd599',3:'#ffdc34',4:'#FFA07A'}
+    results = pd.concat([clean_super_df_geo[['d_codigo','Latitude','Longtiude']], pd.DataFrame(y)],axis=1)
+    results['color'] = results[0].map(colores)
+    
+    mapbox_access_token = "pk.eyJ1IjoibWVtb25rZXkwMSIsImEiOiJjam51ejVxbWwxOXpnM3Zwa3h5d3Jxd2d5In0.mrAjlrVjoHFLnN8H2TzHrg"
+
+    fig = go.Figure(go.Scattermapbox(
+            lat=results['Latitude'],
+            lon=results['Longtiude'],
+            mode='markers',
+            marker=go.scattermapbox.Marker(
+                size=10,
+                color=results['color'],
+            ),
+            text=results['d_codigo'],
+        ))
+    
+    fig.update_layout(
+        hovermode='closest',
+        mapbox=go.layout.Mapbox(
+            accesstoken=mapbox_access_token,
+            bearing=0,
+            center=go.layout.mapbox.Center(
+                lat=45,
+                lon=-73
+            ),
+            pitch=0,
+            zoom=5
+        )
+    )
+    
+    pio.write_html(fig, file='hello_world.html', auto_open=True,config={'displaylogo': False})
+
+    
+    
+
+    
     
